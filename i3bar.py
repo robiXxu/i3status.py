@@ -45,46 +45,45 @@ if __name__ == '__main__':
     print("[")
     print("[]")
 
-    items = [
-            item(
-                name="ip_local",
-                full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
-                color="#333333",
-                background="#C49D58",
-                prevColor=mainColor
-            ),
-            item(
-                name="id_disk_usage",
-                full_text="  {}% ".format(psutil.disk_usage('/').percent),
-                color="#EEEEEE",
-                background="#3949AB",
-                prevColor="#C49D58"
-            ),
-            item(
-                name="id_memory",
-                full_text="  {}% ".format(psutil.virtual_memory()[2]),
-                color="#DDDDDD",
-                background="#B87238",
-                prevColor="#3949AB"
-            ),
-            item(
-                name="id_cpu_usage",
-                full_text="  {}% ".format(psutil.cpu_percent(interval=1)),
-                color="#FFFFFF",
-                background="#A7282E",
-                prevColor="#B87238"
-            ),
-            item(
-                name='id_date',
-                full_text="  {} ".format(datetime.now().strftime("%H:%M %a %d-%B")),
-                color="#333333",
-                background="#80B3B1",
-                prevColor="#A7282E",
-            ),
-            separator(mainColor, "#80B3B1")
-    ]
-
     while True:
+        items = [
+                item(
+                    name="ip_local",
+                    full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
+                    color="#333333",
+                    background="#C49D58",
+                    prevColor=mainColor
+                ),
+                item(
+                    name="id_disk_usage",
+                    full_text="  {}% ".format(psutil.disk_usage('/').percent),
+                    color="#EEEEEE",
+                    background="#3949AB",
+                    prevColor="#C49D58"
+                ),
+                item(
+                    name="id_memory",
+                    full_text="  {}% ".format(psutil.virtual_memory()[2]),
+                    color="#DDDDDD",
+                    background="#B87238",
+                    prevColor="#3949AB"
+                ),
+                item(
+                    name="id_cpu_usage",
+                    full_text="  {}% ".format(psutil.cpu_percent(interval=1)),
+                    color="#FFFFFF",
+                    background="#A7282E",
+                    prevColor="#B87238"
+                ),
+                item(
+                    name='id_date',
+                    full_text="  {} ".format(datetime.now().strftime("%H:%M %a %d-%B")),
+                    color="#333333",
+                    background="#80B3B1",
+                    prevColor="#A7282E",
+                ),
+                separator(mainColor, "#80B3B1")
+        ]
         print(",[{}]".format(",".join(items)))
         time.sleep(10)
 
