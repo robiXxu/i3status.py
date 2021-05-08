@@ -70,8 +70,8 @@ if __name__ == '__main__':
                 item(
                     name="id_spotify_info",
                     full_text=" {} ".format(getSpotifyInfo()),
-                    color="#444444",
-                    background="#DBCB7E",
+                    color="#EEEEEE",
+                    background="#666666",
                     prev_color=main_color
                 ),
                 item(
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                     full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
                     color="#333333",
                     background="#C49D58",
-                    prev_color="#DBCB7E"
+                    prev_color="#666666"
                 ),
                 item(
                     name="id_disk_usage",
