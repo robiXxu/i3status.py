@@ -19,6 +19,8 @@ pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
 
+## icons from
+https://fontawesome.com/cheatsheet/free/solid
 
 
 ### example:
