@@ -22,6 +22,9 @@ pip install -r requirements.txt
 ## icons from
 https://fontawesome.com/cheatsheet/free/solid
 
+## colors from 
+http://colormind.io/bootstrap/
+
 
 ### example:
 ```
