@@ -5,6 +5,9 @@ from datetime import datetime
 import socket
 import psutil
 import dbus
+import GPUtil
+from functools import reduce
+from operator import add,truediv
 
 main_color="#2E3440"
 # in seconds
@@ -43,6 +46,37 @@ def getSpotifyInfo():
             print(e)
             return ''
 
+def getNvidiaGPUTemp():
+    try:
+        nvidia = GPUtil.getGPUs()[0]
+        return f"  {nvidia.temperature}°C "
+    except Exception as e:
+        print(e)
+        return ''
+
+def getCPUAvgTemp():
+    try:
+        temps = psutil.sensors_temperatures()
+        cpu = temps['coretemp']
+        avgTemp = getAvgTemp(cpu)
+        return f"  {avgTemp}°C "
+    except Exception as e:
+        print(e)
+        return ''
+
+def getAvgTemp(temp_array):
+    return int(truediv(reduce(add,list(map(lambda v: v.current, temp_array))),len(temp_array)))
+
+def getAMDTemp():
+    try:
+        temps = psutil.sensors_temperatures()
+        gpu = temps['amdgpu']
+        avgTemp = getAvgTemp(gpu)
+        return f"  {avgTemp}°C "
+    except Exception as e:
+        print(e)
+        return ''
+
 class Item:
     def __init__(self, name, full_text, color, background, enabled):
         self.name = name
@@ -69,6 +103,10 @@ class Item:
 
 def items_array():
     spotifyInfo = getSpotifyInfo()
+    nvidiaTemp = getNvidiaGPUTemp()
+    amdTemp = getAMDTemp()
+    cpuAvgTemp = getCPUAvgTemp()
+
     return list(filter(lambda i: i.enabled, [
         Item(
             name="id_spotify_info",
@@ -83,6 +121,20 @@ def items_array():
             color="#333333",
             background="#C49D58",
             enabled=True
+        ),
+        Item(
+            name="id_nvidia_temp",
+            full_text=nvidiaTemp,
+            color="#98A9B4",
+            background="#123D57",
+            enabled=len(nvidiaTemp) > 0
+        ),
+        Item(
+            name="id_amd_gpu_temp",
+            full_text=amdTemp,
+            color="#F6F6F1",
+            background="#ECC259",
+            enabled=len(amdTemp) > 0
         ),
         Item(
             name="id_disk_usage",
@@ -104,6 +156,13 @@ def items_array():
             color="#FFFFFF",
             background="#A7282E",
             enabled=True
+        ),
+        Item(
+            name="id_cpu_avg_temp",
+            full_text=cpuAvgTemp,
+            color="#96B7D4",
+            background="#F3F5F8",
+            enabled=len(cpuAvgTemp) > 0
         ),
         Item(
             name="id_date",

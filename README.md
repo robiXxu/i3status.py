@@ -3,11 +3,22 @@
 
 ![preview](preview.png)
 
+```
+virtualenv i3status
+```
 
-Requires dbus-python for spotify part
 ```
-pip3 install dbus-python
+source i3status/bin/activate
 ```
+
+```
+pip freeze > requirements.txt
+```
+
+```
+pip install -r requirements.txt
+```
+
 
 
 ### example:
