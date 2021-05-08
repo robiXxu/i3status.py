@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import socket
 import psutil
+import dbus
 
 mainColor="#2E3440"
 
@@ -39,6 +40,23 @@ def item(name, full_text, color, background, prevColor):
     }
     return ",".join([separator(background, prevColor), json.dumps(obj)])
 
+def getSpotifyInfo():
+    try:
+        sessionBus = dbus.SessionBus()
+        spotify_object = sessionBus.get_object('org.mpris.MediaPlayer2.spotify', '/org/mpris/MediaPlayer2')
+        spotify_props = dbus.Interface(spotify_object,'org.freedesktop.DBus.Properties')
+
+        spotify_meta = spotify_props.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+
+        return "{} - {}".format(spotify_meta['xesam:artist'][0], spotify_meta['xesam:title'])
+
+    except Exception as e:
+        # spotify is closed
+        if isinstance(e, dbus.exceptions.DBusException):
+            return ''
+        else:
+            print(e)
+            return ''
 
 if __name__ == '__main__':
     print('{ "version": 1 }')
@@ -48,11 +66,18 @@ if __name__ == '__main__':
     while True:
         items = [
                 item(
-                    name="ip_local",
+                    name="id_spotify_info",
+                    full_text=" {} ".format(getSpotifyInfo()),
+                    color="#444444",
+                    background="#DBCB7E",
+                    prevColor=mainColor
+                ),
+                item(
+                    name="id_ip_local",
                     full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
                     color="#333333",
                     background="#C49D58",
-                    prevColor=mainColor
+                    prevColor="#DBCB7E"
                 ),
                 item(
                     name="id_disk_usage",
@@ -85,5 +110,5 @@ if __name__ == '__main__':
                 separator(mainColor, "#80B3B1")
         ]
         print(",[{}]".format(",".join(items)))
-        time.sleep(10)
+        time.sleep(5)
 
