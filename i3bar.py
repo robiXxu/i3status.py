@@ -25,23 +25,6 @@ def separator(c1, c2):
     }
     return json.dumps(obj)
 
-
-def item(name, full_text, color, background, prev_color):
-    obj = {
-        "full_text": full_text,
-        "name": name,
-        "color": color,
-        "background": background,
-        "separator": "false",
-        "separator_block_width": 0,
-        "border": main_color,
-        "border_left": 0,
-        "border_right": 0,
-        "border_top": 0,
-        "border_bottom": 0,
-    }
-    return ",".join([separator(background, prev_color), json.dumps(obj)])
-
 def getSpotifyInfo():
     try:
         sessionBus = dbus.SessionBus()
@@ -60,57 +43,92 @@ def getSpotifyInfo():
             print(e)
             return ''
 
+class Item:
+    def __init__(self, name, full_text, color, background, enabled):
+        self.name = name
+        self.full_text = full_text
+        self.color = color
+        self.background = background
+        self.enabled = enabled
+    def print(self, prev_color):
+        obj = {
+            "full_text": self.full_text,
+            "name": self.name,
+            "color": self.color,
+            "background": self.background,
+            "separator": "false",
+            "separator_block_width": 0,
+            "border": main_color,
+            "border_left": 0,
+            "border_right": 0,
+            "border_top": 0,
+            "border_bottom": 0,
+        }
+        return ",".join([separator(self.background, prev_color), json.dumps(obj)])
+
+
+def items_array():
+    spotifyInfo = getSpotifyInfo()
+    return list(filter(lambda i: i.enabled, [
+        Item(
+            name="id_spotify_info",
+            full_text=" {} ".format(spotifyInfo),
+            color="#EEEEEE",
+            background="#666666",
+            enabled=len(spotifyInfo) > 0
+        ),
+        Item(
+            name="id_ip_local",
+            full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
+            color="#333333",
+            background="#C49D58",
+            enabled=True
+        ),
+        Item(
+            name="id_disk_usage",
+            full_text="  {}% ".format(psutil.disk_usage('/').percent),
+            color="#EEEEEE",
+            background="#3949AB",
+            enabled=True
+        ),
+        Item(
+            name="id_memory",
+            full_text="  {}% ".format(psutil.virtual_memory()[2]),
+            color="#DDDDDD",
+            background="#B87238",
+            enabled=True
+        ),
+        Item(
+            name="id_cpu_usage",
+            full_text="  {}% ".format(psutil.cpu_percent(interval=1)),
+            color="#FFFFFF",
+            background="#A7282E",
+            enabled=True
+        ),
+        Item(
+            name="id_date",
+            full_text="  {} ".format(datetime.now().strftime("%H:%M %a %d-%B")),
+            color="#333333",
+            background="#80B3B1",
+            enabled=True
+        )
+    ]))
+
+
 if __name__ == '__main__':
     print('{ "version": 1 }')
     print("[")
     print("[]")
 
     while True:
-        items = [
-                item(
-                    name="id_spotify_info",
-                    full_text=" {} ".format(getSpotifyInfo()),
-                    color="#EEEEEE",
-                    background="#666666",
-                    prev_color=main_color
-                ),
-                item(
-                    name="id_ip_local",
-                    full_text="  {} ".format(socket.gethostbyname(socket.gethostname())),
-                    color="#333333",
-                    background="#C49D58",
-                    prev_color="#666666"
-                ),
-                item(
-                    name="id_disk_usage",
-                    full_text="  {}% ".format(psutil.disk_usage('/').percent),
-                    color="#EEEEEE",
-                    background="#3949AB",
-                    prev_color="#C49D58"
-                ),
-                item(
-                    name="id_memory",
-                    full_text="  {}% ".format(psutil.virtual_memory()[2]),
-                    color="#DDDDDD",
-                    background="#B87238",
-                    prev_color="#3949AB"
-                ),
-                item(
-                    name="id_cpu_usage",
-                    full_text="  {}% ".format(psutil.cpu_percent(interval=1)),
-                    color="#FFFFFF",
-                    background="#A7282E",
-                    prev_color="#B87238"
-                ),
-                item(
-                    name='id_date',
-                    full_text="  {} ".format(datetime.now().strftime("%H:%M %a %d-%B")),
-                    color="#333333",
-                    background="#80B3B1",
-                    prev_color="#A7282E",
-                ),
-                separator(main_color, "#80B3B1")
-        ]
+        items = []
+        items_arr = items_array()
+        for i, item in enumerate(items_arr):
+            prev_color = main_color if i == 0 else items_arr[i-1].background
+            items.append(item.print(prev_color))
+
+        items.append(separator(main_color, items_arr[-1].background))
+
         print(",[{}]".format(",".join(items)))
         time.sleep(update_rate)
 
